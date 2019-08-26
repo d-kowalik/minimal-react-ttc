@@ -129,9 +129,11 @@ class Game extends Component {
       } else if (this.state.moves === 4) {
         const { lastMove } = this.state
         if (lastMove === 1 || lastMove === 3) {
-          move = 2
+          if (this.state.squares[0] === null) move = 0
+          else move = 2
         } else if (lastMove === 5 || lastMove === 7) {
-          move = 6
+          if (this.state.squares[6] === null) move = 6
+          else move = 0
         }
       }
     }
@@ -144,7 +146,7 @@ class Game extends Component {
 
   makeMove = i => {
     const squares = this.state.squares.slice()
-    if (calculateWinner(squares) || squares[i]) return
+    if (calculateWinner(squares) || squares[i]) return false
     squares[i] = this.currentPlayer()
     this.setState({
       squares,
@@ -152,11 +154,12 @@ class Game extends Component {
       moves: this.state.moves + 1,
       lastMove: i
     })
+    return true
   }
 
   handleClick = i => {
     if (this.state.busy) return
-    this.makeMove(i)
+    if (!this.makeMove(i)) return
     this.setState({ busy: true })
     setTimeout(this.aiMove, 200)
   }
